@@ -1,5 +1,6 @@
 import { format, parseISO } from "date-fns";
 import { pt } from "date-fns/locale";
+import { useRouter } from "next/router";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { api } from "../../services/api";
@@ -24,6 +25,18 @@ type EpisodeProps = {
 }
 
 export default function Episode({ episode }: EpisodeProps) {
+  // only needed if we are using fallback true
+  // since fallback blocking is new 
+  // we probably wont need this ever again
+  
+  // const router = useRouter();
+
+  // if (router.isFallback) {
+  //   return(
+  //     <p>Loading...</p>
+  //   );
+  // }
+
   return (
     <div className={styles.episode}>
       <div className={styles.thumbnailContainer}>
@@ -56,10 +69,39 @@ export default function Episode({ episode }: EpisodeProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+
+  // get a limited ammount to generate static pages
+  const { data } = await api.get('episodes', {
+    params: {
+      _limit: 2,
+      _sort:'published_at',
+      _order:'desc',
+    }
+  });
+
+  const paths = data.map(episode => {
+    return {
+      params: {
+        slug: episode.id
+      }
+    }
+  })
+
   return {
-    paths: [],
+    paths,
+    // paths: [
+    //   { params: {slug: 'como-virar-lider-desenvolvimento'} },
+    //   { params: {slug: 'comunidades-e-tecnologia'} },
+    //   { params: {slug: 'typescript-vale-a-pena'} },
+    //   { params: {slug: 'estrategias-de-autenticacao-jwt-oauth'} },
+    // ],
+    // fallback false if not in list above it will return 404
+    // fallback true it will call the api via client browser
+    // fallback 'blocking' it will call the api via next server and cached
     fallback: 'blocking',
   }
+
+  // true and blocking are incremental static regeneration
 } 
 
 export const getStaticProps: GetStaticProps = async (context) => {
