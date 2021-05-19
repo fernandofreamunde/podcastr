@@ -1,6 +1,5 @@
 import { format, parseISO } from "date-fns";
 import { pt } from "date-fns/locale";
-import { useRouter } from "next/router";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import { api } from "../../services/api";
@@ -25,17 +24,6 @@ type EpisodeProps = {
 }
 
 export default function Episode({ episode }: EpisodeProps) {
-  // only needed if we are using fallback true
-  // since fallback blocking is new 
-  // we probably wont need this ever again
-  
-  // const router = useRouter();
-
-  // if (router.isFallback) {
-  //   return(
-  //     <p>Loading...</p>
-  //   );
-  // }
 
   return (
     <div className={styles.episode}>
@@ -89,15 +77,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    // paths: [
-    //   { params: {slug: 'como-virar-lider-desenvolvimento'} },
-    //   { params: {slug: 'comunidades-e-tecnologia'} },
-    //   { params: {slug: 'typescript-vale-a-pena'} },
-    //   { params: {slug: 'estrategias-de-autenticacao-jwt-oauth'} },
-    // ],
-    // fallback false if not in list above it will return 404
-    // fallback true it will call the api via client browser
-    // fallback 'blocking' it will call the api via next server and cached
     fallback: 'blocking',
   }
 
